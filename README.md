@@ -1,0 +1,2 @@
+# -philosophershq
+ philosophershq.com
