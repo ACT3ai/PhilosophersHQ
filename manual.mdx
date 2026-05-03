@@ -1,0 +1,366 @@
+---
+title: PhilosophersHQ — The Manual
+description: How The Signal puzzle site works, end-to-end, including the symmetric-encryption unlock model where the three answers form the decryption passphrase.
+status: design
+last_updated: 2026-05-03
+---
+
+# PhilosophersHQ — The Manual
+
+This manual explains what the site at [philosophershq.com](https://philosophershq.com) is, how it is built, and the decryption model that turns the three riddle answers into a passphrase that unlocks each puzzle's hidden payload.
+
+It is written for two audiences:
+- **Solvers** — what the site does and why it does it that way.
+- **Authors and engineers** — how to add new puzzles, encrypt their payloads, and verify the unlock flow.
+
+---
+
+## 1. What the site is
+
+PhilosophersHQ is the public destination for **The Signal**, a Cicada-3301-style philosophical and investigative puzzle distributed across 4chan boards (`/pol/`, `/x/`, `/sci/`) and other open platforms. Solvers who follow the trail off the boards land here.
+
+Each numbered puzzle has:
+
+- A short title and description.
+- A "what this puzzle is about" tag (one of the project's eighteen dimensions).
+- Three questions, each with one answer.
+- A hidden **payload** — a keyword, link, or phrase — that is revealed only when all three answers decrypt the puzzle's ciphertext correctly.
+
+The site itself is a static page served by GitHub Pages. There is no backend. Every step of the unlock — passphrase derivation, key derivation, decryption, integrity check — happens in the visitor's browser using built-in browser cryptography. Nothing about the solver, the typed answers, or the unlock attempts ever leaves the browser.
+
+---
+
+## 2. The unlock model
+
+When a solver loads a puzzle they see:
+
+- A "Riddle number" input.
+- Three answer rows. Each row is a sequence of single-letter boxes laid out in groups that match the answer's word lengths.
+- An **Unlock** button below the three answer rows.
+
+Typing into the boxes does not, on its own, verify any answer against a stored value. The boxes are pure input. The verification happens only when **Unlock** is clicked:
+
+1. The browser reads the three answers from the boxes.
+2. It normalizes each answer (lowercase, letters only).
+3. It builds the **passphrase** by joining the three normalized answers with a two-space separator (see §3).
+4. It uses that passphrase as the key material for symmetric decryption (§4).
+5. It tries to decrypt the puzzle's ciphertext (§5).
+6. If decryption succeeds (the AES-GCM authentication tag verifies), the plaintext payload is shown. If it fails, the boxes flash red and reset.
+
+Crucially: the answers themselves are **never stored on the site, on disk, or in source code**. The site only ships the ciphertext. The right answers exist only in the solver's head and in the original author's notes.
+
+---
+
+## 3. Passphrase derivation
+
+The passphrase is a deterministic function of the three answers. Given answers `A1`, `A2`, `A3`:
+
+```
+norm(s)        = s.toLowerCase().replace(/[^a-z]/g, "")
+passphrase     = norm(A1) + "  " + norm(A2) + "  " + norm(A3)
+```
+
+The separator is **two ASCII space characters** (`U+0020` × 2). It is fixed and is never derived from the answers.
+
+### Worked example (illustrative — not a real puzzle)
+
+| Field | Value |
+|---|---|
+| Question 1 answer | `TRUTH` |
+| Question 2 answer | `PRIMARY SOURCE` |
+| Question 3 answer | `JFK SOCIAL` |
+| `norm(A1)` | `truth` |
+| `norm(A2)` | `primarysource` |
+| `norm(A3)` | `jfksocial` |
+| **Passphrase** | `truth  primarysource  jfksocial` |
+
+The passphrase is what feeds PBKDF2 (§4). It is not stored anywhere — it is recomputed in the browser each time the solver clicks **Unlock**, and recomputed in the author's offline tool each time a puzzle is encrypted.
+
+### Why two spaces?
+
+A single space would still work, but a two-space separator is unambiguous to readers who see the passphrase format documented and prevents ambiguity if any future answer ever contains an internal space. Since `norm(s)` strips non-letters, internal spaces are removed before joining; the only spaces in the final passphrase are the explicit separators.
+
+---
+
+## 4. Key derivation
+
+The passphrase is a memorable string, not a cryptographic key. Memorable strings have low per-character entropy. A naive `key = passphrase` scheme would let an attacker brute-force any puzzle in milliseconds. We deliberately make brute force **slow and expensive** by running the passphrase through a Key Derivation Function (KDF) tuned to take ~100 ms on modern hardware.
+
+### Algorithm: PBKDF2-HMAC-SHA256
+
+| Parameter | Value | Reason |
+|---|---|---|
+| KDF | **PBKDF2-HMAC-SHA256** | Native to the Web Crypto API. No external library needed. NIST-standardized. |
+| Iterations | **600,000** | OWASP 2024 / 2026 recommended floor for PBKDF2-SHA256. Tuned to ~100 ms on a 2024-era laptop. |
+| Salt | **16 random bytes per puzzle** | Distinct salt per puzzle prevents an attacker who breaks one from speeding up attacks on others. Stored alongside the ciphertext in plaintext (this is correct — the salt is not a secret). |
+| Output | **32 bytes (256 bits)** | The AES-256 key. |
+
+Argon2id is a stronger password-hashing function and is OWASP's current top recommendation. Web browsers do not yet expose Argon2 through the Web Crypto API. Until they do, PBKDF2-HMAC-SHA256 at 600,000 iterations is the right choice for a static, library-free site like ours. We can migrate later by adding a `kdf` field to the encrypted blob and supporting both algorithms.
+
+---
+
+## 5. Encryption
+
+### Algorithm: AES-256-GCM
+
+| Parameter | Value |
+|---|---|
+| Cipher | **AES-256-GCM** (Galois/Counter Mode) |
+| Key | The 32-byte PBKDF2 output |
+| IV (nonce) | **12 random bytes per puzzle**, generated at encryption time |
+| Auth tag | **16 bytes** (128 bits), produced by GCM |
+| Plaintext | The puzzle's reward payload — typically a short string |
+| Associated data | None |
+
+GCM is an authenticated cipher. Decryption with the wrong key fails on the authentication tag — the browser cannot be tricked into "decrypting" gibberish. This means: **wrong answers produce a clean failure, not silently corrupt output**. We use that property as our integrity check; no separate checksum is needed.
+
+### Blob format on disk
+
+Each puzzle's encrypted payload is stored as a JSON object with base64url-encoded byte fields:
+
+```yaml
+unlock:
+  v: 1
+  kdf: "pbkdf2-sha256"
+  iter: 600000
+  salt: "<22-char base64url>"        # 16 random bytes
+  iv:   "<16-char base64url>"        # 12 random bytes
+  ct:   "<base64url ciphertext+tag>" # AES-GCM output
+```
+
+This block lives next to the existing puzzle fields in `data/puzzles.yaml`:
+
+```yaml
+- puzzle_number: 1
+  title: "Three Letters in Dallas"
+  description: "..."
+  is_about: "JFK"
+  questions:
+    - question: "..."
+      answer: "DALLAS"           # plaintext only during authoring; see §8
+    - question: "..."
+      answer: "WARREN"
+    - question: "..."
+      answer: "HSCA"
+  unlock:
+    v: 1
+    kdf: "pbkdf2-sha256"
+    iter: 600000
+    salt: "..."
+    iv:   "..."
+    ct:   "..."
+```
+
+### Why AES-GCM and not AES-CBC or AES-CTR
+
+GCM is authenticated by default. CBC and CTR are not — using either would require us to add and verify our own MAC (HMAC-SHA-256 over the ciphertext), and getting that right is a common source of crypto bugs (encrypt-then-MAC vs MAC-then-encrypt, padding oracles in CBC, etc.). GCM gives us authentication for free, in one well-understood primitive, exposed natively by the browser.
+
+---
+
+## 6. Library choice — Web Crypto API (native)
+
+**We use the Web Crypto API directly. No npm dependency. No CDN script.**
+
+The Web Crypto API (`window.crypto.subtle`) is built into every browser shipped since 2017 and exposes exactly the primitives we need: PBKDF2 (`deriveBits` / `deriveKey`), AES-GCM (`encrypt` / `decrypt`), and a CSPRNG (`getRandomValues`). It is implemented in C/Rust inside the browser, runs much faster than any JS library, and ships zero bytes over the wire — there is nothing to download, audit, or update.
+
+### Alternatives considered (and why we did not pick them)
+
+| Library | Verdict | Reason |
+|---|---|---|
+| **Web Crypto API** | **Chosen** | Native. Fast. No dependency. Exposes PBKDF2 + AES-GCM directly. |
+| `@noble/ciphers` | Acceptable fallback | Pure-JS, audited, ~5 KB. Useful only if a target browser lacks Web Crypto, which is no real browser in 2026. |
+| `libsodium-wrappers` | Overkill | ~200 KB. Adds Argon2id and ChaCha20-Poly1305, which are nice but unnecessary given AES-GCM is native. |
+| `node-forge` | Avoid | Big surface area, mixed crypto quality, no GCM until recently. |
+| `crypto-js` | **Do not use** | Defaults to MD5/SHA1-based KDF with 1 iteration. Documented insecure. |
+
+If future requirements push us to Argon2id or post-quantum primitives that the browser does not yet expose, `@noble/hashes` + `@noble/ciphers` are the right swap-in. The blob format already includes a `kdf` field so we can add new algorithms without breaking old puzzles.
+
+---
+
+## 7. Decryption — what runs in the browser
+
+The unlock function lives in `assets/app.js`. It is called when the solver clicks **Unlock**.
+
+```js
+// assets/app.js — pseudocode of the unlock path
+async function unlock(puzzle, typedAnswers) {
+  // 1. Build the passphrase from the three answers.
+  const norm = s => String(s).toLowerCase().replace(/[^a-z]/g, "");
+  const passphrase = norm(typedAnswers[0]) + "  "
+                   + norm(typedAnswers[1]) + "  "
+                   + norm(typedAnswers[2]);
+
+  // 2. Read the encrypted blob.
+  const { iter, salt, iv, ct } = puzzle.unlock;
+
+  // 3. Derive the AES-256 key with PBKDF2-HMAC-SHA256.
+  const enc = new TextEncoder();
+  const baseKey = await crypto.subtle.importKey(
+    "raw",
+    enc.encode(passphrase),
+    { name: "PBKDF2" },
+    false,
+    ["deriveKey"]
+  );
+  const key = await crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      hash: "SHA-256",
+      salt: b64urlDecode(salt),
+      iterations: iter
+    },
+    baseKey,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["decrypt"]
+  );
+
+  // 4. Decrypt. AES-GCM throws if the auth tag does not verify.
+  try {
+    const plainBuf = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: b64urlDecode(iv) },
+      key,
+      b64urlDecode(ct)
+    );
+    return { ok: true, plaintext: new TextDecoder().decode(plainBuf) };
+  } catch (e) {
+    return { ok: false };  // wrong answers, by design
+  }
+}
+```
+
+`b64urlDecode` is a 5-line helper — base64url is identical to base64 except for two character substitutions and optional padding stripping.
+
+### Why this is safe to put on a public site
+
+A solver can download `puzzles.yaml`, view source, open dev tools, and inspect every byte of the unlock function. None of that helps them. To unlock a puzzle they must still know the three answers — there is no shortcut around the 600,000 PBKDF2 iterations and the AES-GCM authentication tag. The cipher does not care whether the attacker reads the JS or not.
+
+---
+
+## 8. Authoring — how to encrypt a new puzzle
+
+Plaintext answers exist only on the author's machine. They are used to **generate** the encrypted blob, and then they are erased from anything that gets committed to the public repo.
+
+### Author's workflow
+
+1. Write the puzzle in `data/puzzles.yaml` with the three plaintext `answer:` fields, the title/description/is_about, and the three `question:` prompts.
+2. Decide the **payload** — the secret string that should be revealed when all three answers are correct. Examples: a URL, a JFK Social keyword, a final phrase, a coordinate.
+3. Run `scripts/encrypt-puzzle.mjs` (Node ≥ 20, no deps — uses Node's built-in `crypto.webcrypto`):
+   ```bash
+   node scripts/encrypt-puzzle.mjs <puzzle_number>
+   ```
+   The script reads the puzzle's three plaintext answers, builds the passphrase the same way the browser does, generates a random salt and IV, runs PBKDF2 (600,000 iterations), encrypts the payload with AES-256-GCM, and prints the `unlock:` block to paste back into the YAML.
+4. Paste the `unlock:` block into the puzzle entry. Run a quick sanity check by opening the site locally and unlocking with the answers.
+5. **Before commit**, replace the three plaintext `answer:` fields with placeholders (or simply remove them — the UI no longer needs them once `unlock` is present). The repo never holds the plaintext answers and the encrypted payload at the same time.
+6. Commit and push.
+
+### Authoring script outline
+
+```js
+// scripts/encrypt-puzzle.mjs — Node 20+ ESM, zero dependencies
+import { webcrypto as crypto } from "node:crypto";
+import fs from "node:fs/promises";
+
+const norm = s => String(s).toLowerCase().replace(/[^a-z]/g, "");
+
+async function encrypt(answers, plaintext) {
+  const passphrase = norm(answers[0]) + "  " + norm(answers[1]) + "  " + norm(answers[2]);
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv   = crypto.getRandomValues(new Uint8Array(12));
+
+  const baseKey = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(passphrase),
+    { name: "PBKDF2" }, false, ["deriveKey"]
+  );
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", hash: "SHA-256", salt, iterations: 600000 },
+    baseKey,
+    { name: "AES-GCM", length: 256 }, false, ["encrypt"]
+  );
+  const ct = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    new TextEncoder().encode(plaintext)
+  );
+
+  const b = u => Buffer.from(u).toString("base64url");
+  return { v: 1, kdf: "pbkdf2-sha256", iter: 600000,
+           salt: b(salt), iv: b(iv), ct: b(ct) };
+}
+```
+
+### Round-trip test
+
+The script should encrypt and then immediately decrypt with the same passphrase, and assert that the result equals the original plaintext. If round-trip fails, the puzzle does not get committed.
+
+---
+
+## 9. UI — the Unlock button
+
+A new `<button id="unlock-btn">` lives below the three answer rows and is initially disabled. It is enabled when all three answer rows are full (every letter box has a character). Clicking it triggers the unlock flow in §7.
+
+States:
+
+| State | Visual | Behavior |
+|---|---|---|
+| **Disabled** | Muted gray, can't click | Default; appears whenever any answer row has empty boxes. |
+| **Ready** | Black on near-white, hover lifts | All three rows full; clicking runs unlock. |
+| **Working** | Spinner, text says "Unlocking…" | PBKDF2 takes ~100 ms; the button shows progress. |
+| **Success** | Brief green flash, then disappears | Reward payload is shown in its place. |
+| **Failure** | Brief red shake; button stays | All three answer rows shake red and reset to first-empty-box. |
+
+The keyboard shortcut **Enter** (when any answer row is focused and all three are full) is equivalent to clicking Unlock.
+
+---
+
+## 10. Migration plan
+
+The current site (as of 2026-05-03) ships plaintext answers and verifies by string comparison. Migrating to encryption is staged:
+
+1. **Add the `unlock:` block** to a few test puzzles, alongside the plaintext `answer:` fields. The site continues to verify by string comparison and ignores `unlock:`. (No-op deploy, fully backward compatible.)
+2. **Add the Unlock button + decrypt path** to `app.js` behind a feature flag (`?unlock=1` query param). Internal verification only.
+3. **Flip the default**: the Unlock button replaces the current per-row live-verification flow. Live feedback is removed; the boxes just accept input until the solver clicks Unlock.
+4. **Remove the plaintext `answer:` fields** from all puzzles, leaving only `question:` prompts and the `unlock:` blob. At this point the public repo no longer contains any answer in any form.
+
+Each step is a separate commit and can be reverted.
+
+---
+
+## 11. Threat model
+
+What this design protects against:
+
+- **Casual source-reading.** Anyone who downloads `puzzles.yaml` cannot read any payload without solving the puzzle. The plaintext payload is never in the repo.
+- **Cross-puzzle correlation.** Each puzzle has its own salt and IV, so cracking one tells you nothing about any other.
+- **Brute-force at scale.** 600,000 PBKDF2 iterations means a determined attacker burns ~100 ms per guess on a single CPU, ~10–50 ms on a strong GPU. Combined with the answer-space of the puzzle, brute force is uneconomical against well-designed riddles.
+
+What it does **not** protect against:
+
+- **Easy-to-guess answers.** If a puzzle's three answers are common words an attacker would try anyway (e.g., the dictionary's top thousand words), brute force may still finish in days. This is a puzzle-design constraint, not a crypto failure: pick at least one specific, low-frequency answer per puzzle.
+- **Targeted social engineering.** The crypto cannot prevent a solver from posting answers to a forum.
+- **Side-channel attacks on shared machines.** A compromised browser extension can read the typed answers regardless of the encryption.
+
+These limits are typical of any password-based encryption scheme. They are documented here so puzzle authors can write puzzles whose answer-space is large enough that brute force is genuinely expensive.
+
+---
+
+## 12. Why this site exists
+
+The Signal exists because most solvers will not read primary sources, will not survive a 4chan thread, and will not click on a link prefixed with the letter Q. The riddles are an invitation that does not look like one. The encryption is a small piece of cryptographic etiquette: it makes the puzzle work the way a puzzle should — the reward is hidden until the solver does the work.
+
+If you are reading this manual, you have already done part of the work.
+
+---
+
+## Sources
+
+- [The Ultimate Developer's Guide to AES-GCM with the Web Cryptography API — Thomas Dudek, Medium](https://medium.com/@thomas_40553/how-to-secure-encrypt-and-decrypt-data-within-the-browser-with-aes-gcm-and-pbkdf2-057b839c96b6)
+- [bradyjoslin/webcrypto-example — Web Crypto API encryption demo](https://github.com/bradyjoslin/webcrypto-example)
+- [chrisveness AES-GCM gist — SubtleCrypto encrypt/decrypt](https://gist.github.com/chrisveness/43bcda93af9f646d083fad678071b90a)
+- [aes4js — High-level AES-GCM 256 wrapper using Web Crypto](https://github.com/rndme/aes4js)
+- [OWASP Password Storage Cheat Sheet — current PBKDF2 iteration recommendations](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)
+- [Why You Should Use 310,000+ Iterations with PBKDF2 — DEV Community (2025)](https://dev.to/securebitchat/why-you-should-use-310000-iterations-with-pbkdf2-in-2025-3o1e)
+- [Bitwarden — Encryption Key Derivation (defaults to 600,000 PBKDF2 iterations as of 2026.2.1)](https://bitwarden.com/help/kdf-algorithms/)
+- [Password Hashing Guide 2026: Argon2 vs Bcrypt vs Scrypt vs PBKDF2](https://guptadeepak.com/the-complete-guide-to-password-hashing-argon2-vs-bcrypt-vs-scrypt-vs-pbkdf2-2026/)
+- [PBKDF2 — Wikipedia](https://en.wikipedia.org/wiki/PBKDF2)
+- [Node.js Web Crypto API documentation](https://github.com/nodejs/node/blob/main/doc/api/webcrypto.md)
