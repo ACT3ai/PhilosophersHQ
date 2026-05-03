@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Signal — Answer the riddle...</title>
+  <meta name="description" content="The Signal. Answer the riddle." />
+  <meta name="robots" content="noindex" />
+  <style>
+    :root {
+      --bg: #0a0a0b;
+      --fg: #efe7d2;
+      --fg-dim: #8a8473;
+      --rule: #2a2826;
+      --box-bg: #131311;
+      --box-border: #3a352c;
+      --highlight: #fff4a8;
+      --highlight-text: #1a1500;
+      --solved: #7fbf6a;
+      --solved-bg: #15240f;
+      --wrong: #d05050;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "JetBrains Mono", "Menlo", "Consolas", ui-monospace, monospace;
+      font-feature-settings: "ss01", "cv11";
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8vh 24px 0;
+    }
+
+    main {
+      width: 100%;
+      max-width: 760px;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .top-message {
+      font-size: 28px;
+      letter-spacing: 0.04em;
+      color: var(--fg);
+      text-align: center;
+      margin: 0;
+    }
+
+    .top-message::after {
+      content: "";
+      display: block;
+      width: 64px;
+      height: 1px;
+      background: var(--rule);
+      margin: 24px auto 0;
+    }
+
+    .riddle-number-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    label {
+      font-size: 13px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+    }
+
+    .riddle-number-input {
+      background: var(--box-bg);
+      border: 1px solid var(--box-border);
+      color: var(--fg);
+      font-family: inherit;
+      font-size: 32px;
+      letter-spacing: 0.1em;
+      padding: 14px 20px;
+      width: 220px;
+      outline: none;
+      transition: border-color 120ms ease;
+    }
+
+    .riddle-number-input:focus {
+      border-color: var(--highlight);
+    }
+
+    .riddle-number-input::placeholder {
+      color: var(--fg-dim);
+      opacity: 0.4;
+    }
+
+    .riddle-status {
+      font-size: 13px;
+      color: var(--fg-dim);
+      min-height: 18px;
+    }
+
+    .answers {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+
+    .answer-row {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 240ms ease, transform 240ms ease;
+    }
+
+    .answer-row.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .answer-row .prompt {
+      font-size: 14px;
+      color: var(--fg-dim);
+      letter-spacing: 0.04em;
+      max-width: 720px;
+    }
+
+    .boxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .word-gap {
+      width: 28px;
+      height: 1px;
+    }
+
+    .letter-box {
+      width: 48px;
+      height: 64px;
+      border: 1px solid var(--box-border);
+      background: var(--box-bg);
+      color: var(--fg);
+      font-size: 28px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: text;
+      user-select: none;
+      transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
+      outline: none;
+    }
+
+    .letter-box.active {
+      background: var(--highlight);
+      color: var(--highlight-text);
+      border-color: var(--highlight);
+    }
+
+    .letter-box.solved {
+      color: var(--solved);
+      border-color: var(--solved);
+      background: var(--solved-bg);
+      cursor: default;
+    }
+
+    .letter-box.wrong {
+      animation: shake 380ms ease;
+      border-color: var(--wrong);
+      color: var(--wrong);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    .reward {
+      margin-top: 32px;
+      padding: 28px;
+      border: 1px solid var(--solved);
+      background: var(--solved-bg);
+      color: var(--fg);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 360ms ease, transform 360ms ease;
+    }
+
+    .reward.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    .reward .label {
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--solved);
+      margin-bottom: 12px;
+    }
+
+    .reward .value {
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      word-break: break-word;
+    }
+
+    .reward .value a {
+      color: var(--fg);
+      text-decoration: underline;
+      text-decoration-color: var(--solved);
+      text-underline-offset: 4px;
+    }
+
+    .footer {
+      margin-top: auto;
+      padding: 80px 0 32px;
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      opacity: 0.5;
+    }
+
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 540px) {
+      .letter-box {
+        width: 38px;
+        height: 52px;
+        font-size: 22px;
+      }
+      .top-message { font-size: 22px; }
+      .riddle-number-input { font-size: 26px; width: 180px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1 class="top-message">Answer the riddle&hellip;</h1>
+
+    <section class="riddle-number-block" aria-labelledby="riddle-number-label">
+      <label id="riddle-number-label" for="riddle-number">Riddle number</label>
+      <input
+        id="riddle-number"
+        class="riddle-number-input"
+        inputmode="numeric"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="—"
+        aria-describedby="riddle-status"
+      />
+      <div id="riddle-status" class="riddle-status" aria-live="polite"></div>
+    </section>
+
+    <section class="answers" id="answers" aria-label="Riddle answers"></section>
+
+    <section class="reward" id="reward" hidden aria-live="polite">
+      <div class="label">Signal received</div>
+      <div class="value" id="reward-value"></div>
+    </section>
+
+    <input
+      id="keystroke-sink"
+      class="visually-hidden"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      aria-hidden="true"
+      tabindex="-1"
+    />
+  </main>
+
+  <footer class="footer">philosophershq.com &middot; the signal</footer>
+
+  <script type="application/json" id="riddles-data">
+  {
+    "riddles": [
+      {
+        "number": 1,
+        "title": "The Question",
+        "questions": [
+          {
+            "prompt": "Question one answer",
+            "answer_words": [5],
+            "answer_hash": "c5c4bad89ee44b4da0321344964f145dd3023fc1ab0d9c2473e2716b788481ae"
+          },
+          {
+            "prompt": "Question two answer",
+            "answer_words": [7, 6],
+            "answer_hash": "602c9d8a2adbcb50093c92f19a3ee75ac1b7b9556ed1d418dd57418913cd1a67"
+          },
+          {
+            "prompt": "Question three answer",
+            "answer_words": [3, 6],
+            "answer_hash": "53429a25f5aca47616b7f4aefbc532a643f51e3e3a059d66068e565507cbb360"
+          }
+        ],
+        "reward": {
+          "type": "keyword",
+          "value": "FOLLOW_THE_MEME"
+        }
+      },
+      {
+        "number": 2,
+        "title": "Open the door",
+        "questions": [
+          {
+            "prompt": "Question one answer",
+            "answer_words": [4],
+            "answer_hash": "2348f998744212575d85959674f9607ab26f67708a917157472832386337c904"
+          },
+          {
+            "prompt": "Question two answer",
+            "answer_words": [7],
+            "answer_hash": "460ee6aa3a80359181b794cc31a7185addba77626e9f719c10e3c8efb8668a1d"
+          },
+          {
+            "prompt": "Question three answer",
+            "answer_words": [8],
+            "answer_hash": "1f5087db919ced5c123c7f507d3fcce818cb0cf6e77c2f95a8a35e951e03fdb9"
+          }
+        ],
+        "reward": {
+          "type": "link",
+          "value": "https://jfk.social/keyword/AWAKEN"
+        }
+      }
+    ]
+  }
+  </script>
+
+  <script>
+    (() => {
+      const data = JSON.parse(document.getElementById("riddles-data").textContent);
+      const riddlesByNumber = new Map(data.riddles.map(r => [r.number, r]));
+
+      const numberInput = document.getElementById("riddle-number");
+      const statusEl    = document.getElementById("riddle-status");
+      const answersEl   = document.getElementById("answers");
+      const rewardEl    = document.getElementById("reward");
+      const rewardValEl = document.getElementById("reward-value");
+      const sink        = document.getElementById("keystroke-sink");
+
+      let activeRiddle = null;
+      let rows = [];
+      let activeRow = null;
+
+      async function sha256(text) {
+        const buf = new TextEncoder().encode(text);
+        const hashBuf = await crypto.subtle.digest("SHA-256", buf);
+        return Array.from(new Uint8Array(hashBuf))
+          .map(b => b.toString(16).padStart(2, "0"))
+          .join("");
+      }
+
+      class AnswerRow {
+        constructor(question, index) {
+          this.question = question;
+          this.index = index;
+          this.wordLengths = question.answer_words;
+          this.expectedHash = question.answer_hash;
+          this.totalLetters = this.wordLengths.reduce((a, b) => a + b, 0);
+          this.values = new Array(this.totalLetters).fill("");
+          this.boxes = [];
+          this.activeIndex = 0;
+          this.solved = false;
+
+          const root = document.createElement("div");
+          root.className = "answer-row";
+          root.setAttribute("role", "group");
+          root.setAttribute("aria-label", question.prompt);
+          this.root = root;
+
+          const promptEl = document.createElement("div");
+          promptEl.className = "prompt";
+          promptEl.textContent = question.prompt + ":";
+          root.appendChild(promptEl);
+
+          const boxesEl = document.createElement("div");
+          boxesEl.className = "boxes";
+          root.appendChild(boxesEl);
+
+          let letterIdx = 0;
+          this.wordLengths.forEach((wordLen, wordIdx) => {
+            if (wordIdx > 0) {
+              const gap = document.createElement("div");
+              gap.className = "word-gap";
+              boxesEl.appendChild(gap);
+            }
+            for (let i = 0; i < wordLen; i++) {
+              const box = document.createElement("div");
+              box.className = "letter-box";
+              const myIndex = letterIdx;
+              box.dataset.index = String(myIndex);
+              box.setAttribute("role", "textbox");
+              box.setAttribute("aria-label",
+                `letter ${i + 1} of ${wordLen}, word ${wordIdx + 1} of ${this.wordLengths.length}`);
+              box.addEventListener("mousedown", (e) => {
+                e.preventDefault();
+                this.activate(myIndex);
+              });
+              this.boxes.push(box);
+              boxesEl.appendChild(box);
+              letterIdx++;
+            }
+          });
+        }
+
+        activate(idx) {
+          if (this.solved) return;
+          activeRow = this;
+          this.activeIndex = Math.max(0, Math.min(idx, this.totalLetters - 1));
+          updateHighlights();
+          sink.focus({ preventScroll: true });
+        }
+
+        async handleKey(e) {
+          if (this.solved) return;
+
+          if (e.key === "Backspace") {
+            e.preventDefault();
+            if (this.values[this.activeIndex]) {
+              this.values[this.activeIndex] = "";
+              this.boxes[this.activeIndex].textContent = "";
+            } else if (this.activeIndex > 0) {
+              this.activeIndex--;
+              this.values[this.activeIndex] = "";
+              this.boxes[this.activeIndex].textContent = "";
+            }
+            updateHighlights();
+            return;
+          }
+
+          if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            if (this.activeIndex > 0) this.activeIndex--;
+            updateHighlights();
+            return;
+          }
+          if (e.key === "ArrowRight") {
+            e.preventDefault();
+            if (this.activeIndex < this.totalLetters - 1) this.activeIndex++;
+            updateHighlights();
+            return;
+          }
+          if (e.key === "Tab") {
+            return;
+          }
+
+          if (/^[a-zA-Z]$/.test(e.key)) {
+            e.preventDefault();
+            const ch = e.key.toUpperCase();
+            this.values[this.activeIndex] = ch;
+            this.boxes[this.activeIndex].textContent = ch;
+            if (this.activeIndex < this.totalLetters - 1) {
+              this.activeIndex++;
+            }
+            updateHighlights();
+
+            if (this.values.every(v => v !== "")) {
+              await this.verify();
+            }
+          }
+        }
+
+        async verify() {
+          const normalized = this.values.join("").toLowerCase();
+          const hash = await sha256(normalized);
+          if (hash === this.expectedHash) {
+            this.solved = true;
+            this.boxes.forEach(b => {
+              b.classList.remove("active");
+              b.classList.add("solved");
+            });
+            advanceToNextUnsolvedRow();
+            checkAllSolved();
+          } else {
+            this.shake();
+          }
+        }
+
+        shake() {
+          this.boxes.forEach(b => b.classList.add("wrong"));
+          setTimeout(() => {
+            this.boxes.forEach(b => {
+              b.classList.remove("wrong");
+              b.textContent = "";
+            });
+            this.values = new Array(this.totalLetters).fill("");
+            this.activeIndex = 0;
+            updateHighlights();
+          }, 420);
+        }
+
+        revealVisible() {
+          requestAnimationFrame(() => this.root.classList.add("visible"));
+        }
+      }
+
+      function updateHighlights() {
+        rows.forEach(row => {
+          row.boxes.forEach((box, i) => {
+            const isActive = (row === activeRow) && (i === row.activeIndex) && !row.solved;
+            box.classList.toggle("active", isActive);
+          });
+        });
+      }
+
+      function advanceToNextUnsolvedRow() {
+        const next = rows.find(r => !r.solved);
+        if (next) {
+          next.activate(next.values.findIndex(v => v === "") === -1 ? 0
+                       : next.values.findIndex(v => v === ""));
+        } else {
+          activeRow = null;
+          updateHighlights();
+        }
+      }
+
+      function checkAllSolved() {
+        if (!activeRiddle) return;
+        if (rows.every(r => r.solved)) {
+          revealReward(activeRiddle.reward);
+        }
+      }
+
+      function revealReward(reward) {
+        if (!reward) return;
+        let valueHtml = "";
+        if (reward.type === "link") {
+          valueHtml = `<a href="${escapeHtml(reward.value)}" rel="noopener">${escapeHtml(reward.value)}</a>`;
+        } else {
+          valueHtml = escapeHtml(reward.value);
+        }
+        rewardValEl.innerHTML = valueHtml;
+        rewardEl.hidden = false;
+        requestAnimationFrame(() => rewardEl.classList.add("visible"));
+      }
+
+      function escapeHtml(s) {
+        return String(s)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
+      }
+
+      function loadRiddle(num) {
+        rows = [];
+        activeRow = null;
+        answersEl.innerHTML = "";
+        rewardEl.classList.remove("visible");
+        rewardEl.hidden = true;
+
+        const riddle = riddlesByNumber.get(num);
+        if (!riddle) {
+          activeRiddle = null;
+          statusEl.textContent = num ? `No riddle ${num} found.` : "";
+          return;
+        }
+        activeRiddle = riddle;
+        statusEl.textContent = riddle.title ? `Riddle ${riddle.number} — ${riddle.title}` : `Riddle ${riddle.number}`;
+
+        riddle.questions.forEach((q, i) => {
+          const row = new AnswerRow(q, i);
+          rows.push(row);
+          answersEl.appendChild(row.root);
+          row.revealVisible();
+        });
+
+        if (rows.length > 0) {
+          rows[0].activate(0);
+        }
+      }
+
+      numberInput.addEventListener("input", () => {
+        const cleaned = numberInput.value.replace(/[^0-9]/g, "");
+        if (cleaned !== numberInput.value) numberInput.value = cleaned;
+        const n = parseInt(cleaned, 10);
+        if (!Number.isFinite(n)) {
+          loadRiddle(null);
+          return;
+        }
+        loadRiddle(n);
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if (document.activeElement === numberInput) return;
+        if (!activeRow) return;
+        if (e.metaKey || e.ctrlKey || e.altKey) return;
+        activeRow.handleKey(e);
+      });
+
+      sink.addEventListener("blur", () => {
+        if (activeRow && !activeRiddle) return;
+        if (activeRow) setTimeout(() => sink.focus({ preventScroll: true }), 0);
+      });
+
+      numberInput.focus();
+    })();
+  </script>
+</body>
+</html>

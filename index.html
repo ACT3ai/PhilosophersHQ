@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Signal — Answer the riddle...</title>
+  <meta name="description" content="The Signal. Answer the riddle." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+
+<body>
+  <main>
+    <h1 class="top-message">Answer the riddle&hellip;</h1>
+
+    <section class="riddle-meta" aria-labelledby="riddle-number-label">
+      <label id="riddle-number-label" for="riddle-number">Riddle number</label>
+      <input
+        id="riddle-number"
+        class="riddle-number-input"
+        inputmode="numeric"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="—"
+        aria-describedby="riddle-status"
+        disabled
+      />
+      <div id="riddle-status" class="riddle-status" aria-live="polite">Loading riddles&hellip;</div>
+      <div id="riddle-title" class="riddle-title"></div>
+      <div id="riddle-description" class="riddle-description"></div>
+      <div id="riddle-about" class="riddle-about"></div>
+    </section>
+
+    <section class="answers" id="answers" aria-label="Riddle answers"></section>
+
+    <section class="reward" id="reward" hidden aria-live="polite">
+      <div class="label">Signal received</div>
+      <div class="value" id="reward-value"></div>
+    </section>
+
+    <div id="boot-error" class="boot-error" hidden role="alert"></div>
+
+    <input
+      id="keystroke-sink"
+      class="visually-hidden"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      aria-hidden="true"
+      tabindex="-1"
+    />
+  </main>
+
+  <footer class="footer">philosophershq.com &middot; the signal</footer>
+
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

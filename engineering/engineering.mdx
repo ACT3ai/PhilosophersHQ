@@ -1,0 +1,233 @@
+---
+title: Engineering — How philosophershq.com Runs on GitHub Pages
+description: Static-first architecture for the riddle web app. No Node server. HTML, CSS, and JS bundled at build time, served from GitHub's CDN, executed in the browser.
+status: spec
+---
+
+# Engineering — How This Site Runs on GitHub Pages
+
+## The constraint that shapes everything
+
+GitHub Pages is **a static file host**. At request time, GitHub's servers serve `.html`, `.css`, `.js`, `.json`, images, and other static files from a CDN. **Nothing executes on GitHub's servers when a visitor loads a page.** No Node, no Python, no Ruby, no PHP, no database. There is no "server side" we can run code on.
+
+This is the right constraint for this product. The riddle UX is interactive (typing into letter boxes, validating answers), but interactive does not mean it needs a server. Everything the page does — render boxes, accept keystrokes, hash typed input, compare against a stored hash, reveal a reward — runs in the visitor's browser. The browser is the runtime.
+
+Once we accept that, the architecture is simple: **build a static bundle in CI, push it to GitHub Pages, let the browser do the rest.**
+
+---
+
+## Two systems GitHub Pages supports
+
+GitHub Pages exposes two ways to publish:
+
+### 1. Jekyll (built-in)
+
+Jekyll is a Ruby static-site generator. When you push Markdown and templates to a Pages-enabled branch, GitHub runs Jekyll for you and serves the output. You write nothing in JavaScript; you write `.md` files and `_layouts/` templates. No Actions workflow required.
+
+**Why it is the wrong fit for our riddle page:** Jekyll's model is "render Markdown to HTML at build time." Our page is a stateful interactive component — letter boxes that fill as you type, a yellow cursor highlight, backspace traversal across word gaps, live SHA-256 hashing of typed input. None of that is Markdown. Inside a Jekyll site we would still hand-write a JavaScript app — we would just be doing it inside a Jekyll wrapper for no benefit. Jekyll is excellent for blogs and documentation. It is the wrong tool for an interactive puzzle UI.
+
+### 2. Custom static deploy via GitHub Actions (the one we use)
+
+GitHub Pages also accepts the output of any static-site build, deployed through the official `actions/deploy-pages` workflow. You build whatever you want in CI — Vite, Astro, Next.js export, SvelteKit static, Hugo, raw HTML — then upload the build output as a Pages artifact, then deploy.
+
+**This is what we use.** It gives us full control: TypeScript, React, Tailwind, modern bundling, code splitting, content-hashed asset names, and a deploy that happens automatically on every push to `main`.
+
+---
+
+## What "runs on GitHub Pages" actually means in our case
+
+There are two phases. Be clear about which is which.
+
+### Build phase (runs in GitHub Actions, on Microsoft-hosted Linux runners)
+
+When we push to `main`:
+
+1. A GitHub Actions runner spins up.
+2. It installs Node 22 and pnpm.
+3. It runs `pnpm install`, then `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`.
+4. Vite produces a `dist/` directory containing `index.html`, hashed JS chunks, hashed CSS, and the static `data/riddles.yaml` (or its compiled JSON form).
+5. The workflow uploads `dist/` as a Pages artifact and triggers `actions/deploy-pages`.
+
+This phase **does** run Node, **does** run TypeScript, **does** run our test suite. But it runs in CI, not at request time. It happens once per push, not once per visitor.
+
+### Serve phase (runs on GitHub's CDN, no execution)
+
+After deploy, the contents of `dist/` are served as static files from `https://philosophershq.com`. When a visitor hits the site:
+
+1. GitHub's CDN returns `index.html`.
+2. The HTML references the hashed JS and CSS files.
+3. The browser downloads and executes the JavaScript bundle.
+4. React mounts. The riddle page renders. Tailwind classes apply.
+5. The visitor types. The browser hashes their input with `@noble/hashes`. Compares against the hash in `riddles.yaml`. Renders the reward if correct.
+
+GitHub does no work beyond serving bytes. There is no per-request compute. There is no Node process. There is no database call. The visitor's browser is the entire runtime.
+
+---
+
+## The tech stack, mapped to GitHub Pages
+
+| Concern | Tool | Where it runs |
+|---|---|---|
+| Language | TypeScript (strict) | Compiled away at build time. Browser runs plain JS. |
+| Build tool | Vite 6 | Runs in GitHub Actions. Outputs a `dist/` folder. |
+| UI framework | React 19 | Bundled into JS. Runs in the visitor's browser. |
+| Routing | React Router 7 (hash mode) | Runs in the browser. See routing note below. |
+| Styling | Tailwind CSS 4 | Compiled to a single hashed `.css` file at build time. |
+| Component primitives | shadcn/ui (copy-in) | Bundled into JS. |
+| Motion | Framer Motion | Bundled into JS. |
+| State | Zustand | Bundled into JS. In-memory in the browser tab. |
+| YAML loading | js-yaml or build-time YAML→JSON via Vite plugin | Recommend converting at build time so the browser ships JSON, not a YAML parser. |
+| Hashing | `@noble/hashes` (SHA-256) | Runs in the browser. Pure JS, audited, ~6 KB. |
+| Tests (unit) | Vitest | Runs in GitHub Actions. Never ships to the browser. |
+| Tests (E2E) | Playwright | Runs in GitHub Actions against a built preview. |
+| Lint / format | ESLint + Prettier | Runs in GitHub Actions. |
+| Package manager | pnpm | Runs in GitHub Actions. |
+| Deploy | `actions/upload-pages-artifact` + `actions/deploy-pages` | Runs in GitHub Actions. |
+
+**Nothing in the right column ever runs on GitHub's web servers at request time.** The right column is exactly two things: "GitHub Actions during build" or "the visitor's browser at runtime."
+
+---
+
+## HTML, CSS, and JS — concretely
+
+### HTML
+
+Vite generates a single `index.html` at the root of `dist/`. It is small. It contains a `<div id="root"></div>` and `<script type="module" src="/assets/index-{hash}.js">` and a `<link rel="stylesheet" href="/assets/index-{hash}.css">`. The page title, meta tags, favicon, and Open Graph tags live here.
+
+The HTML file is what the GitHub CDN returns when somebody types `philosophershq.com` into a browser.
+
+### CSS
+
+Tailwind 4 compiles all the utility classes used anywhere in `src/` into a single CSS file. Vite content-hashes the filename — for example `index-7a3f9b2c.css`. The hash is derived from the file's contents, so cache invalidation is automatic: when we change a class anywhere, the filename changes, and browsers re-fetch.
+
+We do not write any standalone `.css` file by hand for the riddle page itself. Tailwind utility classes (`bg-yellow-200`, `caret-transparent`, `font-mono`, `tracking-widest`) live inline on the JSX elements. The "console-like sparse" aesthetic from the spec is built entirely in Tailwind.
+
+### JavaScript
+
+Vite bundles all of `src/` into one or more JS chunks. The main chunk loads on first paint. Route-level code splitting is available but unnecessary for a site this small — one bundle is fine. Bundle size budget: well under 200 KB gzipped, including React 19, the riddle component, the hash function, the Zustand store, and the parsed riddle data.
+
+The browser executes the bundle. React mounts into `#root`. The riddle page reads `riddles.yaml` (already inlined as JSON at build time), reads the URL hash to find which riddle to display, renders the per-letter boxes from `answer_words`, and wires up the keystroke handlers. Hash verification is a single function call: hash the typed string, compare to the stored hash, return boolean.
+
+There is **no `fetch()` to a backend**. Everything needed is already in the bundle.
+
+---
+
+## Routing on GitHub Pages — the one gotcha
+
+GitHub Pages serves files. It does not understand single-page-app routes. If a visitor goes directly to `philosophershq.com/riddle/3`, the CDN looks for a file at `/riddle/3` and returns 404 because no such file exists.
+
+There are two standard solutions. Pick one.
+
+### Option A — Hash routing (recommended for v1)
+
+Use URLs like `philosophershq.com/#/riddle/3`. The CDN sees only `/`, returns `index.html`, and React Router reads the part after `#` to figure out which view to render. No 404 risk. No special config. Slightly less pretty.
+
+### Option B — HTML5 history routing with a 404 fallback
+
+Use clean URLs like `philosophershq.com/riddle/3`. To handle direct loads, ship a `404.html` that contains the same SPA shell as `index.html`. GitHub Pages serves `404.html` whenever a path is missing. The SPA boots, reads the URL, and renders the right view. This is the standard SPA-on-Pages trick and works reliably, but it is one more file to maintain and slightly less obvious.
+
+**Recommendation:** start with Option A. Switch to Option B only if marketing wants clean URLs in shared links.
+
+---
+
+## The deploy workflow
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+That is the entire server side. It runs once per push, in GitHub Actions.
+
+---
+
+## Custom domain — philosophershq.com
+
+GitHub Pages handles HTTPS automatically via Let's Encrypt once the domain is configured. Two pieces are needed:
+
+1. **Repository config:** add a `CNAME` file at the root of the build output (or commit `public/CNAME` so Vite copies it to `dist/CNAME` on every build). The file contains a single line: `philosophershq.com`.
+2. **DNS at the registrar:** an `ALIAS` or `ANAME` record at the apex pointing to `<github-username>.github.io`, plus a `CNAME` record on the `www` subdomain pointing to the same. Or, equivalently, four `A` records pointing the apex at GitHub's published Pages IPs.
+
+GitHub provisions the certificate within minutes of correct DNS resolution. After that, all traffic is HTTPS. There is no certificate management on our side.
+
+---
+
+## Where this architecture has limits
+
+What we cannot do on GitHub Pages alone:
+
+- **Run server code at request time.** No Lambda equivalent. No "endpoint." If we ever need one, we add it elsewhere — see below.
+- **Store per-visitor state across sessions** without browser storage. (Browser `localStorage` is fine for "remember which riddle the visitor was on." It is not fine for "track all solvers globally.")
+- **Hide secrets.** Anything shipped to the browser is public. Hence: hashed answers, never plaintext.
+- **Rate-limit anything.** A determined attacker can run the hash function against a wordlist locally, no slower than against our site.
+
+If we hit any of those limits, we add a backend **without** moving the frontend off Pages:
+
+- **Cloudflare Workers** — small functions at the edge. Free tier generous. Frontend on Pages calls Worker endpoints via `fetch()`. Recommended if a backend is added.
+- **AWS Lambda + API Gateway** — same shape, more setup, costs slightly more. Use if we want to stay in the existing AWS account.
+- **Vercel / Netlify Functions** — would require moving hosting off Pages onto Vercel/Netlify. Only consider if we are also moving for other reasons.
+
+The frontend code does not change. Only `lib/api.ts` (which does not exist yet) would gain a few `fetch()` calls.
+
+---
+
+## Summary
+
+**Tech we use:** TypeScript + Vite + React 19 + Tailwind 4 + Zustand + `@noble/hashes`, built in GitHub Actions, deployed to GitHub Pages via `actions/deploy-pages`, served as static HTML/CSS/JS from GitHub's CDN, executed entirely in the visitor's browser.
+
+**GitHub Pages "system" we use:** the custom-build path with `actions/deploy-pages`. Not Jekyll.
+
+**Where each layer runs:**
+
+- TypeScript, Vite, tests, linters → GitHub Actions build (once per push).
+- HTML, CSS, JS bundle, riddle data → static files on GitHub's CDN (no execution).
+- React, riddle UI, SHA-256 hashing, answer verification → the visitor's browser.
+
+**Backend on GitHub's servers:** zero. None. By design.
+
+**If a backend is ever required:** Cloudflare Workers, called from the static frontend. Pages stays where it is.

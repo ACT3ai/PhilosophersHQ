@@ -1,0 +1,1220 @@
+# philosophershq.com — The Signal puzzle data
+#
+# Structure:
+#   puzzles:              # level 1 — top-level key
+#     - puzzles:          # level 2 — array of groups; each group holds many puzzles
+#         - puzzle_number: 1     # level 3 — array of puzzles
+#           title: ...           # level 4 — fields of each puzzle
+#           description: ...
+#           is_about: ...
+#           questions:
+#             - question: ...
+#               answer: ...
+#
+# Each puzzle has exactly three questions with three answers.
+# Answers are normalized for comparison: lowercased, non-letter chars removed.
+# Word-length structure of the answer (e.g., 4-letter word + 6-letter word)
+# drives the per-letter box layout in the UI.
+
+puzzles:
+  - puzzles:
+
+      - puzzle_number: 1
+        title: "Three Letters in Dallas"
+        description: "Names the place, the lone-gunman thesis, and the contradicting committee."
+        is_about: "JFK"
+        questions:
+          - question: "City where the motorcade turned onto Elm Street."
+            answer: "DALLAS"
+          - question: "1964 commission whose single-shooter conclusion held until 1979."
+            answer: "WARREN"
+          - question: "1979 House committee that found a probable conspiracy."
+            answer: "HSCA"
+
+      - puzzle_number: 2
+        title: "The Trajectory Problem"
+        description: "Three terms that do work the official record does not."
+        is_about: "JFK"
+        questions:
+          - question: "Bullet that allegedly caused seven wounds in two men."
+            answer: "MAGIC"
+          - question: "Grassy feature where many witnesses ran toward the shots."
+            answer: "KNOLL"
+          - question: "8mm home movie that fixed the timeline of the headshot."
+            answer: "ZAPRUDER"
+
+      - puzzle_number: 3
+        title: "Patsy or Pawn"
+        description: "Names tied to the man who never stood trial."
+        is_about: "JFK"
+        questions:
+          - question: "Surname of the alleged shooter."
+            answer: "OSWALD"
+          - question: "Surname of the man who shot him on live television."
+            answer: "RUBY"
+          - question: "Word Oswald used to describe himself to the press."
+            answer: "PATSY"
+
+      - puzzle_number: 4
+        title: "The Prosecutor"
+        description: "Three answers from the only criminal trial held for the assassination."
+        is_about: "JFK"
+        questions:
+          - question: "New Orleans district attorney who brought the only case."
+            answer: "GARRISON"
+          - question: "Businessman he prosecuted in 1969."
+            answer: "SHAW"
+          - question: "Federal agency Garrison alleged had infiltrated his office."
+            answer: "CIA"
+
+      - puzzle_number: 5
+        title: "Records Released"
+        description: "The paper trail and the year it almost finished coming out."
+        is_about: "JFK"
+        questions:
+          - question: "1992 law mandating release of remaining JFK files."
+            answer: "JFK RECORDS ACT"
+          - question: "Federal archive that holds the assassination records."
+            answer: "NARA"
+          - question: "Year of the last court-ordered tranche release."
+            answer: "2025"
+
+      - puzzle_number: 6
+        title: "Eyes on the Plaza"
+        description: "Three figures present in Dealey Plaza whose roles remain disputed."
+        is_about: "JFK"
+        questions:
+          - question: "Man with the open umbrella on a sunny day."
+            answer: "UMBRELLA MAN"
+          - question: "Witness whose testimony placed shots from the front."
+            answer: "NEWMAN"
+          - question: "Photographer whose picture froze the muzzle smoke debate."
+            answer: "MOORMAN"
+
+      - puzzle_number: 7
+        title: "Before Dallas"
+        description: "Three earlier confrontations that set the stage."
+        is_about: "JFK"
+        questions:
+          - question: "1961 invasion Kennedy refused to escalate."
+            answer: "BAY OF PIGS"
+          - question: "Director Kennedy fired after that failure."
+            answer: "DULLES"
+          - question: "Crisis in October 1962."
+            answer: "MISSILE"
+
+      - puzzle_number: 8
+        title: "Open Protocol"
+        description: "Names of the destination's stack."
+        is_about: "JFK Social"
+        questions:
+          - question: "Open protocol jfk.social is built on."
+            answer: "NOSTR"
+          - question: "Domain that ends the puzzle's external trail."
+            answer: "JFK SOCIAL"
+          - question: "Word for what no single entity controls on the network."
+            answer: "FEED"
+
+      - puzzle_number: 9
+        title: "Without a Throat"
+        description: "Three words for a system designed not to be choked."
+        is_about: "JFK Social"
+        questions:
+          - question: "Property of a network with no central server."
+            answer: "DECENTRALIZED"
+          - question: "What the moderation layer is, by design."
+            answer: "OPEN"
+          - question: "Cryptographic primitive each post is signed by."
+            answer: "KEYPAIR"
+
+      - puzzle_number: 10
+        title: "Relays"
+        description: "Names from the protocol's surface."
+        is_about: "JFK Social"
+        questions:
+          - question: "Server type that simply passes signed events."
+            answer: "RELAY"
+          - question: "Three-letter prefix on a Nostr public key."
+            answer: "NPUB"
+          - question: "Three-letter prefix on a private key."
+            answer: "NSEC"
+
+      - puzzle_number: 11
+        title: "The Speech Floor"
+        description: "Three answers about the constitutional ground for the project."
+        is_about: "JFK Social"
+        questions:
+          - question: "Amendment that protects the act jfk.social hosts."
+            answer: "FIRST"
+          - question: "Year that amendment was ratified."
+            answer: "1791"
+          - question: "Document the amendment is part of."
+            answer: "BILL OF RIGHTS"
+
+      - puzzle_number: 12
+        title: "The Case for War"
+        description: "Three patterns that always precede a manufactured conflict."
+        is_about: "Iran War"
+        questions:
+          - question: "Single word for the shape of every prewar media cycle."
+            answer: "INFLATION"
+          - question: "1964 incident that authorized Vietnam escalation."
+            answer: "TONKIN"
+          - question: "2003 weapons claim that did not exist."
+            answer: "WMD"
+
+      - puzzle_number: 13
+        title: "Sanction and Strangle"
+        description: "Three terms for the slow form of war."
+        is_about: "Iran War"
+        questions:
+          - question: "Economic measure that targets civilians without firing a shot."
+            answer: "SANCTIONS"
+          - question: "International body that monitors Iran's nuclear program."
+            answer: "IAEA"
+          - question: "Year the JCPOA was signed."
+            answer: "2015"
+
+      - puzzle_number: 14
+        title: "Hawks"
+        description: "Three names attached to permanent-conflict policy."
+        is_about: "Iran War"
+        questions:
+          - question: "Surname of the moustached Trump-era national security advisor."
+            answer: "BOLTON"
+          - question: "1990s think tank that drafted the Iraq invasion blueprint."
+            answer: "PNAC"
+          - question: "Institute named for an industrialist that pushed Iraq war."
+            answer: "AEI"
+
+      - puzzle_number: 15
+        title: "The General Said It"
+        description: "Three details from a four-star's recollected memo."
+        is_about: "Iran War"
+        questions:
+          - question: "Surname of the four-star general who described the seven-country plan."
+            answer: "CLARK"
+          - question: "Number of countries in the post-9/11 plan he described."
+            answer: "SEVEN"
+          - question: "Last country named in that plan."
+            answer: "IRAN"
+
+      - puzzle_number: 16
+        title: "Before the First Strike"
+        description: "Three actions that historically precede air campaigns."
+        is_about: "Iran War"
+        questions:
+          - question: "Aircraft carrier deployment to the Gulf signals this."
+            answer: "POSTURE"
+          - question: "Diplomatic move that withdraws nuclear signatures."
+            answer: "WITHDRAWAL"
+          - question: "Strait whose closure would trigger global oil panic."
+            answer: "HORMUZ"
+
+      - puzzle_number: 17
+        title: "Data Fusion"
+        description: "Three terms about a Denver-based data infrastructure firm."
+        is_about: "Surveillance Tech"
+        questions:
+          - question: "Industry term for joining many data sources into one query plane."
+            answer: "FUSION"
+          - question: "Three-letter agency that contracts heavily for biometric search."
+            answer: "DHS"
+          - question: "Phrase for a list of names produced by an algorithm."
+            answer: "WATCHLIST"
+
+      - puzzle_number: 18
+        title: "Immigration Plumbing"
+        description: "Three words about the operational layer of enforcement."
+        is_about: "Surveillance Tech"
+        questions:
+          - question: "Federal sub-agency that runs deportation operations."
+            answer: "ICE"
+          - question: "Database product family used to consolidate enforcement data."
+            answer: "GOTHAM"
+          - question: "Word for the practice of sharing leads across agencies."
+            answer: "FUSION"
+
+      - puzzle_number: 19
+        title: "Funded by the Pentagon's Bank"
+        description: "Three answers about the early money behind intelligence-tech."
+        is_about: "Surveillance Tech"
+        questions:
+          - question: "CIA-backed venture capital arm seeded since 1999."
+            answer: "INQTEL"
+          - question: "Word for the relationship when a vendor sells to its own seed funder."
+            answer: "CAPTURE"
+          - question: "Year that venture arm was founded."
+            answer: "1999"
+
+      - puzzle_number: 20
+        title: "Predictive"
+        description: "Three terms in the marketing of pre-crime."
+        is_about: "Surveillance Tech"
+        questions:
+          - question: "Adjective that tries to make watchlisting sound like science."
+            answer: "PREDICTIVE"
+          - question: "Term for the trail every digital action leaves behind."
+            answer: "EXHAUST"
+          - question: "Word for the practice of grading people by their patterns."
+            answer: "SCORING"
+
+      - puzzle_number: 21
+        title: "Continuity"
+        description: "Three names at the top of foreign policy across administrations."
+        is_about: "Puppet Master"
+        questions:
+          - question: "Council that publishes Foreign Affairs."
+            answer: "CFR"
+          - question: "Annual private gathering of Atlantic elites since 1954."
+            answer: "BILDERBERG"
+          - question: "Commission founded in 1973 by Rockefeller and Brzezinski."
+            answer: "TRILATERAL"
+
+      - puzzle_number: 22
+        title: "The Revolving Door"
+        description: "Three terms for the same staff under different jerseys."
+        is_about: "Puppet Master"
+        questions:
+          - question: "Common phrase for officials cycling between agency and industry."
+            answer: "REVOLVING DOOR"
+          - question: "Word for the firms that hire ex-officials at high multiples."
+            answer: "LOBBY"
+          - question: "Term for the policy outcome of that cycle."
+            answer: "CAPTURE"
+
+      - puzzle_number: 23
+        title: "JFK's Warning"
+        description: "Three pulled-from-the-record fragments of a 1961 speech."
+        is_about: "Puppet Master"
+        questions:
+          - question: "Word he used for the secret fraternity in the speech."
+            answer: "SECRECY"
+          - question: "What he asked the press to abandon together with him."
+            answer: "DECEPTION"
+          - question: "Single word he opposed to a free society."
+            answer: "MONOLITHIC"
+
+      - puzzle_number: 24
+        title: "The Speech Eisenhower Gave"
+        description: "Three answers from the 1961 farewell."
+        is_about: "Puppet Master"
+        questions:
+          - question: "Two-word phrase he warned Americans against."
+            answer: "MILITARY INDUSTRIAL"
+          - question: "Year the speech was delivered."
+            answer: "1961"
+          - question: "Adjective he used for the danger of misplaced power."
+            answer: "GRAVE"
+
+      - puzzle_number: 25
+        title: "Through the Door"
+        description: "Three positions on the rotating roster of careers."
+        is_about: "Puppet Master"
+        questions:
+          - question: "Senate body ostensibly oversees intelligence."
+            answer: "SSCI"
+          - question: "House counterpart of that body."
+            answer: "HPSCI"
+          - question: "Word for what these committees are accused of providing."
+            answer: "COVER"
+
+      - puzzle_number: 26
+        title: "Names on Both Boards"
+        description: "Three patterns in directorships of media and defense."
+        is_about: "Puppet Master"
+        questions:
+          - question: "Word for being on multiple corporate boards at once."
+            answer: "INTERLOCK"
+          - question: "Industry that overlaps most with intelligence boards."
+            answer: "MEDIA"
+          - question: "Word for ownership concentrated in a few hands."
+            answer: "CONSOLIDATION"
+
+      - puzzle_number: 27
+        title: "Anonymous Drops"
+        description: "Three answers about the prior signal."
+        is_about: "QAnon"
+        questions:
+          - question: "Single letter that named the operation."
+            answer: "Q"
+          - question: "First imageboard the drops appeared on."
+            answer: "4CHAN"
+          - question: "Imageboard the drops migrated to after early 2018."
+            answer: "8CHAN"
+
+      - puzzle_number: 28
+        title: "Trip Code"
+        description: "Three nouns from anonymous-drop infrastructure."
+        is_about: "QAnon"
+        questions:
+          - question: "Hashed proof-of-identity used on imageboards."
+            answer: "TRIPCODE"
+          - question: "Word for one anonymous post in the series."
+            answer: "DROP"
+          - question: "Word for the followers' practice of decoding posts."
+            answer: "DECODE"
+
+      - puzzle_number: 29
+        title: "Signal Buried in Noise"
+        description: "Three lessons about how the prior signal failed."
+        is_about: "QAnon"
+        questions:
+          - question: "Word for prophecies that did not come to pass."
+            answer: "FAILED"
+          - question: "Word for the volume that drowned out anything specific."
+            answer: "NOISE"
+          - question: "What this puzzle insists on, that the prior signal lacked."
+            answer: "SOURCES"
+
+      - puzzle_number: 30
+        title: "Clearance Levels"
+        description: "Three terms misappropriated by the prior signal."
+        is_about: "QAnon"
+        questions:
+          - question: "Energy department clearance Q stood for, in real life."
+            answer: "DOE"
+          - question: "Three-letter clearance level for nuclear weapons access."
+            answer: "QSA"
+          - question: "Word for what no government drop would ever willingly do."
+            answer: "PUBLISH"
+
+      - puzzle_number: 31
+        title: "The Wall"
+        description: "Three names for the same structure that keeps stories out."
+        is_about: "Storytelling"
+        questions:
+          - question: "Single-word noun for the consensus that gatekeeps reality."
+            answer: "NARRATIVE"
+          - question: "Verb for what the wall does to inconvenient facts."
+            answer: "EXCLUDE"
+          - question: "Word for the speaker who challenges it."
+            answer: "DISSIDENT"
+
+      - puzzle_number: 32
+        title: "Frame the Story"
+        description: "Three craft terms used to bend the listener's ear."
+        is_about: "Storytelling"
+        questions:
+          - question: "Word for the lens placed on a story before it is told."
+            answer: "FRAME"
+          - question: "Word for the false binary offered as the only choice."
+            answer: "DICHOTOMY"
+          - question: "Word for an enemy figure manufactured for the audience."
+            answer: "STRAWMAN"
+
+      - puzzle_number: 33
+        title: "Manufactured Consent"
+        description: "Three answers about the foundational text."
+        is_about: "Storytelling"
+        questions:
+          - question: "Surname of the linguist who co-authored the 1988 book."
+            answer: "CHOMSKY"
+          - question: "Surname of his co-author."
+            answer: "HERMAN"
+          - question: "Number of filters their propaganda model defined."
+            answer: "FIVE"
+
+      - puzzle_number: 34
+        title: "Why Cryptic"
+        description: "Three reasons true stories are told sideways."
+        is_about: "Storytelling"
+        questions:
+          - question: "Word for the reflex that rejects a claim before hearing it."
+            answer: "DISMISSAL"
+          - question: "Word for the audience whose vocabulary has been pre-captured."
+            answer: "TRAINED"
+          - question: "Word for what a riddle gives the listener that a slogan does not."
+            answer: "WORK"
+
+      - puzzle_number: 35
+        title: "The Question Mark"
+        description: "Three uses of the curl that beats the period."
+        is_about: "Storytelling"
+        questions:
+          - question: "Punctuation that bypasses a defended belief."
+            answer: "QUESTION"
+          - question: "Word for what the audience does when given that mark."
+            answer: "WONDER"
+          - question: "Single word for the puzzle's most powerful form."
+            answer: "INVITATION"
+
+      - puzzle_number: 36
+        title: "Live Stream"
+        description: "Three details from the political event most recent at puzzle release."
+        is_about: "Current Political Event"
+        questions:
+          - question: "Word for an event watched by millions in real time."
+            answer: "BROADCAST"
+          - question: "Word for the immediate post-event narrative pivot."
+            answer: "PIVOT"
+          - question: "Word for the official version that arrives within an hour."
+            answer: "STORY"
+
+      - puzzle_number: 37
+        title: "Audit Denied"
+        description: "Three answers about contested counts."
+        is_about: "Current Political Event"
+        questions:
+          - question: "Word for the inspection a county refuses to perform."
+            answer: "AUDIT"
+          - question: "Word for the device whose code is not public."
+            answer: "MACHINE"
+          - question: "Word for the paper alternative that ends most disputes."
+            answer: "BALLOT"
+
+      - puzzle_number: 38
+        title: "The Bridge to History"
+        description: "Three terms that connect a current event to a documented pattern."
+        is_about: "Current Political Event"
+        questions:
+          - question: "Word for an event identical in shape to one decades earlier."
+            answer: "REPEAT"
+          - question: "Word for the lens that recognizes the pattern."
+            answer: "PRECEDENT"
+          - question: "Word for the mistake of treating each event as unique."
+            answer: "PRESENTISM"
+
+      - puzzle_number: 39
+        title: "Footage Withheld"
+        description: "Three patterns when public video does not appear."
+        is_about: "Current Political Event"
+        questions:
+          - question: "Three-letter agency that frequently classifies the footage."
+            answer: "FBI"
+          - question: "Word for the camera angle suddenly missing."
+            answer: "OVERHEAD"
+          - question: "Phrase for the official excuse that buys time."
+            answer: "ONGOING"
+
+      - puzzle_number: 40
+        title: "Witness Removal"
+        description: "Three terms for what happens to inconvenient observers."
+        is_about: "Current Political Event"
+        questions:
+          - question: "Word for an interview that disappears from the record."
+            answer: "EDITED"
+          - question: "Word for an account quietly retracted."
+            answer: "RECANTED"
+          - question: "Word for what is done to the witness's reputation."
+            answer: "SMEAR"
+
+      - puzzle_number: 41
+        title: "Same Day, Different Country"
+        description: "Three names of synchronized events the press treated as unrelated."
+        is_about: "Current Political Event"
+        questions:
+          - question: "Word for two events occurring within hours of each other."
+            answer: "SIMULTANEOUS"
+          - question: "Word for the pattern of synchronized headlines."
+            answer: "COORDINATION"
+          - question: "Word for the press's habit of denying a pattern exists."
+            answer: "COINCIDENCE"
+
+      - puzzle_number: 42
+        title: "What Madison Said"
+        description: "Three answers about the original argument."
+        is_about: "Democracy"
+        questions:
+          - question: "Surname of the Federalist No. 51 author."
+            answer: "MADISON"
+          - question: "Word he used for human nature in that paper."
+            answer: "AMBITION"
+          - question: "Doctrine the paper defended."
+            answer: "SEPARATION"
+
+      - puzzle_number: 43
+        title: "Three Branches"
+        description: "Three names for the supposedly equal pieces."
+        is_about: "Democracy"
+        questions:
+          - question: "Branch that writes the law."
+            answer: "LEGISLATIVE"
+          - question: "Branch that executes the law."
+            answer: "EXECUTIVE"
+          - question: "Branch that interprets the law."
+            answer: "JUDICIAL"
+
+      - puzzle_number: 44
+        title: "Consent of the Governed"
+        description: "Three terms for the working condition of legitimacy."
+        is_about: "Democracy"
+        questions:
+          - question: "Word for the act that produces a representative."
+            answer: "VOTE"
+          - question: "Word for the news a citizen must have to vote well."
+            answer: "INFORMED"
+          - question: "Word for the speech a citizen must be allowed to make."
+            answer: "FREE"
+
+      - puzzle_number: 45
+        title: "What Tocqueville Saw"
+        description: "Three answers from the 1835 traveler's account."
+        is_about: "Democracy"
+        questions:
+          - question: "French observer's surname."
+            answer: "TOCQUEVILLE"
+          - question: "Word he used for the tendency of the majority to silence dissent."
+            answer: "TYRANNY"
+          - question: "Word for the small civic groups he praised."
+            answer: "ASSOCIATION"
+
+      - puzzle_number: 46
+        title: "Emergency Mode"
+        description: "Three terms for the silent shift away from law."
+        is_about: "Democracy Removed"
+        questions:
+          - question: "Adjective for the powers used after 9/11."
+            answer: "EMERGENCY"
+          - question: "Phrase for the legal frame that justifies indefinite detention."
+            answer: "AUMF"
+          - question: "Word for the suspension of normal procedure."
+            answer: "EXCEPTION"
+
+      - puzzle_number: 47
+        title: "Court Behind a Curtain"
+        description: "Three answers about the surveillance court."
+        is_about: "Democracy Removed"
+        questions:
+          - question: "Acronym for the court that approves nearly all warrants."
+            answer: "FISA"
+          - question: "Approximate percentage of warrants approved."
+            answer: "99"
+          - question: "Word for a hearing held with one side absent."
+            answer: "EXPARTE"
+
+      - puzzle_number: 48
+        title: "Patriot Act"
+        description: "Three answers about a law passed in a panic."
+        is_about: "Democracy Removed"
+        questions:
+          - question: "Year the original act was signed."
+            answer: "2001"
+          - question: "Section that authorized bulk metadata."
+            answer: "215"
+          - question: "Number of senators who read the bill before voting."
+            answer: "ONE"
+
+      - puzzle_number: 49
+        title: "By Executive Order"
+        description: "Three powers exercised without Congress."
+        is_about: "Democracy Removed"
+        questions:
+          - question: "Word for an instrument signed by a president alone."
+            answer: "ORDER"
+          - question: "Word for the assassination authority claimed under it."
+            answer: "DRONE"
+          - question: "Word for the citizenship status not protected by it."
+            answer: "ABROAD"
+
+      - puzzle_number: 50
+        title: "Continuity of Government"
+        description: "Three answers from a program rarely named in public."
+        is_about: "Democracy Removed"
+        questions:
+          - question: "Acronym for the post-attack government plan."
+            answer: "COG"
+          - question: "Decade the program took its modern shape."
+            answer: "1980s"
+          - question: "Surname of one architect later in HHS."
+            answer: "CHENEY"
+
+      - puzzle_number: 51
+        title: "Three Letters"
+        description: "Three agencies with overlapping mandates."
+        is_about: "Intel Services"
+        questions:
+          - question: "Foreign intelligence agency since 1947."
+            answer: "CIA"
+          - question: "Domestic counter-intelligence and investigative bureau."
+            answer: "FBI"
+          - question: "Largest agency by budget; signals intelligence."
+            answer: "NSA"
+
+      - puzzle_number: 52
+        title: "Mind Control"
+        description: "Three answers about a program declassified by the Church Committee."
+        is_about: "Intel Services"
+        questions:
+          - question: "Project name for CIA mind-control research."
+            answer: "MKULTRA"
+          - question: "Surname of the scientist who allegedly fell from a window."
+            answer: "OLSON"
+          - question: "Year the program was first publicly named."
+            answer: "1975"
+
+      - puzzle_number: 53
+        title: "Senator from Idaho"
+        description: "Three answers about the 1975 commission."
+        is_about: "Intel Services"
+        questions:
+          - question: "Surname of the senator who chaired."
+            answer: "CHURCH"
+          - question: "Word for the abuses the committee documented."
+            answer: "ABUSES"
+          - question: "Number of separate operations the committee named."
+            answer: "MANY"
+
+      - puzzle_number: 54
+        title: "Family Jewels"
+        description: "Three answers from a single internal CIA document."
+        is_about: "Intel Services"
+        questions:
+          - question: "Slang nickname for the 1973 internal report."
+            answer: "JEWELS"
+          - question: "Surname of the director who commissioned it."
+            answer: "SCHLESINGER"
+          - question: "Year it was finally released to the public."
+            answer: "2007"
+
+      - puzzle_number: 55
+        title: "Tower of Babel"
+        description: "Three terms for an unaccountable signals empire."
+        is_about: "Intel Services"
+        questions:
+          - question: "Five-eyes acronym for international SIGINT cooperation."
+            answer: "FVEY"
+          - question: "Program revealed by Snowden in 2013."
+            answer: "PRISM"
+          - question: "Phone-records program he also revealed."
+            answer: "MAINWAY"
+
+      - puzzle_number: 56
+        title: "Black Budget"
+        description: "Three properties of money no citizen can audit."
+        is_about: "Intel Services"
+        questions:
+          - question: "Word for funding hidden from the public budget."
+            answer: "BLACK"
+          - question: "Approximate annual size in billions of dollars."
+            answer: "EIGHTY"
+          - question: "Word for what cannot be done to it by GAO."
+            answer: "AUDIT"
+
+      - puzzle_number: 57
+        title: "Operation Mockingbird"
+        description: "Three answers about press capture as policy."
+        is_about: "Intel Ops"
+        questions:
+          - question: "Bird that names the program."
+            answer: "MOCKINGBIRD"
+          - question: "Word for the journalists placed on agency payroll."
+            answer: "ASSETS"
+          - question: "Surname of the Carl Bernstein piece's 1977 magazine."
+            answer: "ROLLINGSTONE"
+
+      - puzzle_number: 58
+        title: "COINTELPRO"
+        description: "Three answers about FBI domestic operations."
+        is_about: "Intel Ops"
+        questions:
+          - question: "Bureau that ran the program."
+            answer: "FBI"
+          - question: "Civil rights leader the program targeted with letters."
+            answer: "KING"
+          - question: "Year the program was officially shut down."
+            answer: "1971"
+
+      - puzzle_number: 59
+        title: "Operation Northwoods"
+        description: "Three answers about a proposed false-flag plan."
+        is_about: "Intel Ops"
+        questions:
+          - question: "Body that drafted the plan in 1962."
+            answer: "JCS"
+          - question: "Country the false flag would be blamed on."
+            answer: "CUBA"
+          - question: "President who rejected the plan."
+            answer: "KENNEDY"
+
+      - puzzle_number: 60
+        title: "Phoenix Program"
+        description: "Three answers about Vietnam-era assassinations."
+        is_about: "Intel Ops"
+        questions:
+          - question: "Word for the targeted-killing program."
+            answer: "PHOENIX"
+          - question: "Approximate documented killings, in thousands."
+            answer: "TWENTY"
+          - question: "Surname of CIA director who admitted its scale."
+            answer: "COLBY"
+
+      - puzzle_number: 61
+        title: "Operation Gladio"
+        description: "Three answers about NATO stay-behind networks."
+        is_about: "Intel Ops"
+        questions:
+          - question: "European country whose 1990 disclosure broke the story."
+            answer: "ITALY"
+          - question: "Decade the operation began."
+            answer: "1950s"
+          - question: "Word for the false-flag bombings attributed to the network."
+            answer: "STRATEGY"
+
+      - puzzle_number: 62
+        title: "Elite and Crowd"
+        description: "Three words for the relationship at the center of populism."
+        is_about: "Populist"
+        questions:
+          - question: "Word for the small entrenched group at the top."
+            answer: "ELITE"
+          - question: "Word for the larger group whose channels close."
+            answer: "PEOPLE"
+          - question: "Word for the moment those channels finally break."
+            answer: "REVOLT"
+
+      - puzzle_number: 63
+        title: "When Channels Close"
+        description: "Three signs that lawful channels are blocked."
+        is_about: "Populist"
+        questions:
+          - question: "Word for a media that ignores a constituency."
+            answer: "BLACKOUT"
+          - question: "Word for a party that will not seat new members."
+            answer: "GATEKEPT"
+          - question: "Word for a court that will not hear the case."
+            answer: "DENIED"
+
+      - puzzle_number: 64
+        title: "Why Now"
+        description: "Three social conditions that produce populist movements."
+        is_about: "Populist"
+        questions:
+          - question: "Word for stagnant or falling real wages."
+            answer: "WAGES"
+          - question: "Word for jobs lost to offshored production."
+            answer: "OFFSHORING"
+          - question: "Word for an immigration policy unmatched by consent."
+            answer: "UNILATERAL"
+
+      - puzzle_number: 65
+        title: "The Island"
+        description: "Three answers about a documented child-trafficking ring."
+        is_about: "Evil"
+        questions:
+          - question: "Surname of the financier convicted in 2008."
+            answer: "EPSTEIN"
+          - question: "Surname of his convicted accomplice."
+            answer: "MAXWELL"
+          - question: "Phrase for the documented mechanism over targets."
+            answer: "BLACKMAIL"
+
+      - puzzle_number: 66
+        title: "Names on the Logs"
+        description: "Three categories of names recorded in the flight manifests."
+        is_about: "Evil"
+        questions:
+          - question: "Branch of government with multiple names on the logs."
+            answer: "ROYAL"
+          - question: "Branch of academia whose presidents appear on logs."
+            answer: "UNIVERSITY"
+          - question: "Industry with the most names on the logs by count."
+            answer: "FINANCE"
+
+      - puzzle_number: 67
+        title: "The Cell Cameras"
+        description: "Three details from a death the official report cannot explain."
+        is_about: "Evil"
+        questions:
+          - question: "Word for the camera state at the moment in question."
+            answer: "BROKEN"
+          - question: "Word for the cellmate who was removed."
+            answer: "REMOVED"
+          - question: "Word for the guards' state during the incident."
+            answer: "ASLEEP"
+
+      - puzzle_number: 68
+        title: "Two More Brothers"
+        description: "Three answers about the family lost in the same decade."
+        is_about: "Murdered"
+        questions:
+          - question: "Surname of the Attorney General killed in Los Angeles in 1968."
+            answer: "KENNEDY"
+          - question: "City where he was killed."
+            answer: "LOSANGELES"
+          - question: "Hotel where the killing occurred."
+            answer: "AMBASSADOR"
+
+      - puzzle_number: 69
+        title: "On the Balcony"
+        description: "Three answers about Memphis 1968."
+        is_about: "Murdered"
+        questions:
+          - question: "Surname of the civil rights leader assassinated."
+            answer: "KING"
+          - question: "Hotel where he was shot."
+            answer: "LORRAINE"
+          - question: "Year a Memphis civil jury found a conspiracy in the case."
+            answer: "1999"
+
+      - puzzle_number: 70
+        title: "The UN Plane"
+        description: "Three answers about the 1961 Congo crash."
+        is_about: "Murdered"
+        questions:
+          - question: "Surname of the UN Secretary-General killed."
+            answer: "HAMMARSKJOLD"
+          - question: "Country where his plane crashed."
+            answer: "ZAMBIA"
+          - question: "Word for what new evidence in 2017 indicated."
+            answer: "ATTACK"
+
+      - puzzle_number: 71
+        title: "Forrestal's Fall"
+        description: "Three answers about a 1949 'suicide' from a hospital window."
+        is_about: "Murdered"
+        questions:
+          - question: "Surname of the first Secretary of Defense."
+            answer: "FORRESTAL"
+          - question: "Hospital where he died."
+            answer: "BETHESDA"
+          - question: "Word for the contents of the diary said to be missing."
+            answer: "ZIONIST"
+
+      - puzzle_number: 72
+        title: "Wellstone"
+        description: "Three answers about a 2002 plane crash."
+        is_about: "Murdered"
+        questions:
+          - question: "Surname of the senator killed."
+            answer: "WELLSTONE"
+          - question: "State whose senator he was."
+            answer: "MINNESOTA"
+          - question: "Word for the upcoming vote that made him politically inconvenient."
+            answer: "WAR"
+
+      - puzzle_number: 73
+        title: "Snowden"
+        description: "Three answers about the 2013 disclosures."
+        is_about: "Intel Members"
+        questions:
+          - question: "City where the first disclosures were filed."
+            answer: "HONGKONG"
+          - question: "Country that ultimately granted asylum."
+            answer: "RUSSIA"
+          - question: "Newspaper that broke the first story."
+            answer: "GUARDIAN"
+
+      - puzzle_number: 74
+        title: "Assange"
+        description: "Three answers about a publisher's decade-long detention."
+        is_about: "Intel Members"
+        questions:
+          - question: "Embassy where he sought asylum."
+            answer: "ECUADOR"
+          - question: "London prison that held him afterward."
+            answer: "BELMARSH"
+          - question: "Year he reached a plea agreement."
+            answer: "2024"
+
+      - puzzle_number: 75
+        title: "Drake"
+        description: "Three answers about a 2010 prosecution that collapsed."
+        is_about: "Intel Members"
+        questions:
+          - question: "Surname of the NSA whistleblower."
+            answer: "DRAKE"
+          - question: "Statute he was charged under."
+            answer: "ESPIONAGE"
+          - question: "Word for the result the trial produced."
+            answer: "DISMISSED"
+
+      - puzzle_number: 76
+        title: "Manning"
+        description: "Three answers about a soldier who released war logs."
+        is_about: "Intel Members"
+        questions:
+          - question: "Iraq war video she released."
+            answer: "COLLATERAL"
+          - question: "Year of release."
+            answer: "2010"
+          - question: "Year her sentence was commuted."
+            answer: "2017"
+
+      - puzzle_number: 77
+        title: "How We Know"
+        description: "Three answers about the discipline of knowing well."
+        is_about: "Epistemology"
+        questions:
+          - question: "Word for an original document, not a summary."
+            answer: "PRIMARY"
+          - question: "Word for the institution that often controls access."
+            answer: "GATEKEEPER"
+          - question: "Word for the practice of asking who paid for the study."
+            answer: "PROVENANCE"
+
+      - puzzle_number: 78
+        title: "Replication Crisis"
+        description: "Three answers about a quiet collapse in published science."
+        is_about: "Epistemology"
+        questions:
+          - question: "Word for the failure rate found in psychology trials."
+            answer: "MAJORITY"
+          - question: "Word for the field most cited in the original 2015 paper."
+            answer: "PSYCHOLOGY"
+          - question: "Word for what journals rarely publish."
+            answer: "NULL"
+
+      - puzzle_number: 79
+        title: "Funding Bias"
+        description: "Three answers about who pays and what gets found."
+        is_about: "Epistemology"
+        questions:
+          - question: "Word for the 2003 BMJ finding about industry-funded trials."
+            answer: "POSITIVE"
+          - question: "Word for what those trials almost never report."
+            answer: "HARM"
+          - question: "Word for the public sponsor that does not face this bias."
+            answer: "GOVERNMENT"
+
+      - puzzle_number: 80
+        title: "Peer Review"
+        description: "Three answers about a process less rigorous than advertised."
+        is_about: "Epistemology"
+        questions:
+          - question: "Word for what reviewers usually do not see."
+            answer: "DATA"
+          - question: "Word for what reviewers almost never run."
+            answer: "CODE"
+          - question: "Word for the dynamic when reviewer and author are friends."
+            answer: "CAPTURE"
+
+      - puzzle_number: 81
+        title: "What Counts as Evidence"
+        description: "Three categories the consensus dismisses without examining."
+        is_about: "Epistemology"
+        questions:
+          - question: "Word for first-person accounts."
+            answer: "TESTIMONY"
+          - question: "Word for video that survives editing."
+            answer: "FOOTAGE"
+          - question: "Word for documents wrested from agencies."
+            answer: "FOIA"
+
+      - puzzle_number: 82
+        title: "Who Pays Wins"
+        description: "Three names for the same lever."
+        is_about: "Power"
+        questions:
+          - question: "Word for the cost of running for federal office."
+            answer: "MILLIONS"
+          - question: "Acronym for the legal vehicle of unlimited contributions."
+            answer: "PAC"
+          - question: "Phrase for the 2010 Supreme Court ruling."
+            answer: "CITIZENS"
+
+      - puzzle_number: 83
+        title: "Regulators Captured"
+        description: "Three answers about an old, named pattern."
+        is_about: "Power"
+        questions:
+          - question: "Surname of the Chicago economist who named regulatory capture."
+            answer: "STIGLER"
+          - question: "Year of his foundational paper."
+            answer: "1971"
+          - question: "Word for the agency that becomes the industry's ally."
+            answer: "AGENCY"
+
+      - puzzle_number: 84
+        title: "Lobby Row"
+        description: "Three street-level facts about influence."
+        is_about: "Power"
+        questions:
+          - question: "Street most associated with US lobbying."
+            answer: "K"
+          - question: "Word for an ex-lawmaker's first new job."
+            answer: "LOBBYIST"
+          - question: "Multiple by which a former chair's salary jumps."
+            answer: "TEN"
+
+      - puzzle_number: 85
+        title: "Owners of the Means of Reach"
+        description: "Three names for the choke points of attention."
+        is_about: "Power"
+        questions:
+          - question: "Word for ownership concentrated in a few firms."
+            answer: "OLIGOPOLY"
+          - question: "Word for a hidden ranking decision."
+            answer: "ALGORITHM"
+          - question: "Word for what platforms denied for years they did."
+            answer: "MODERATE"
+
+      - puzzle_number: 86
+        title: "Foundations"
+        description: "Three answers about quasi-public actors."
+        is_about: "Power"
+        questions:
+          - question: "Foundation surname tied to early eugenics funding."
+            answer: "ROCKEFELLER"
+          - question: "Foundation surname tied to mid-century think-tank funding."
+            answer: "FORD"
+          - question: "Word for the tax shelter that lets foundations operate."
+            answer: "EXEMPT"
+
+      - puzzle_number: 87
+        title: "Vocabulary Capture"
+        description: "Three words about words."
+        is_about: "Language"
+        questions:
+          - question: "Word for redefining a word until its meaning flips."
+            answer: "INVERT"
+          - question: "Word for substituting a softer term to hide a harm."
+            answer: "EUPHEMISM"
+          - question: "Word for the kind of speech that produces enforcement."
+            answer: "PERFORMATIVE"
+
+      - puzzle_number: 88
+        title: "Newspeak"
+        description: "Three answers about a 1949 novel that named the pattern."
+        is_about: "Language"
+        questions:
+          - question: "Surname of the novelist."
+            answer: "ORWELL"
+          - question: "Number in the title."
+            answer: "1984"
+          - question: "Ministry whose function was the opposite of its name."
+            answer: "TRUTH"
+
+      - puzzle_number: 89
+        title: "Dead Metaphors"
+        description: "Three uses of language that hide thought."
+        is_about: "Language"
+        questions:
+          - question: "Word for a phrase used so often no one parses it anymore."
+            answer: "CLICHE"
+          - question: "Word for a noun that swallowed a verb."
+            answer: "NOMINAL"
+          - question: "Word for the kind of writing Orwell warned against."
+            answer: "POLITICAL"
+
+      - puzzle_number: 90
+        title: "Cycles of Empire"
+        description: "Three answers about the long view."
+        is_about: "Time"
+        questions:
+          - question: "Surname of the historian of generational cycles."
+            answer: "STRAUSS"
+          - question: "Phrase for his recurring crisis season."
+            answer: "FOURTH TURNING"
+          - question: "Surname of the economist who studied long technical cycles."
+            answer: "KONDRATIEV"
+
+      - puzzle_number: 91
+        title: "Late Republic"
+        description: "Three Roman parallels."
+        is_about: "Time"
+        questions:
+          - question: "Surname of the general who crossed his Rubicon."
+            answer: "CAESAR"
+          - question: "Word for the body whose authority eroded as one man's grew."
+            answer: "SENATE"
+          - question: "Year-suffix for a famously bad date in Rome."
+            answer: "BC"
+
+      - puzzle_number: 92
+        title: "Who You Are"
+        description: "Three answers about identity outside captured institutions."
+        is_about: "Identity"
+        questions:
+          - question: "Word for the part of you that exists before any institution names you."
+            answer: "SELF"
+          - question: "Word for what an institution wants you to confuse with selfhood."
+            answer: "ROLE"
+          - question: "Word for the practice of recovering the difference."
+            answer: "ATTENTION"
+
+      - puzzle_number: 93
+        title: "Roots"
+        description: "Three sources of a stable self."
+        is_about: "Identity"
+        questions:
+          - question: "Word for the line of those who came before you."
+            answer: "ANCESTRY"
+          - question: "Word for a place a person belongs to."
+            answer: "HOME"
+          - question: "Word for the daily work that confirms who you are."
+            answer: "CRAFT"
+
+      - puzzle_number: 94
+        title: "Goodhart's Law"
+        description: "Three answers about the pathology of metrics."
+        is_about: "Systems"
+        questions:
+          - question: "Surname of the economist."
+            answer: "GOODHART"
+          - question: "Word for what a measure becomes when it becomes a target."
+            answer: "BAD"
+          - question: "Word for the gap between what is measured and what matters."
+            answer: "PROXY"
+
+      - puzzle_number: 95
+        title: "Perverse Incentive"
+        description: "Three answers about systems that pay for the wrong outcome."
+        is_about: "Systems"
+        questions:
+          - question: "Word for an incentive that rewards the opposite of intent."
+            answer: "PERVERSE"
+          - question: "Word for a system that resists its own correction."
+            answer: "ENTRENCHED"
+          - question: "Word for the habit of blaming people inside the bad system."
+            answer: "SCAPEGOAT"
+
+      - puzzle_number: 96
+        title: "What Clear Sight Costs"
+        description: "Three answers about the obligation that follows knowing."
+        is_about: "Awakening"
+        questions:
+          - question: "Word for what knowing more carries that knowing less does not."
+            answer: "DUTY"
+          - question: "Word for the action of telling someone who has not yet heard."
+            answer: "WITNESS"
+          - question: "Word for the temptation to say nothing once you know."
+            answer: "SILENCE"
+
+      - puzzle_number: 97
+        title: "The Refusal"
+        description: "Three answers about not joining the cover."
+        is_about: "Awakening"
+        questions:
+          - question: "Word for declining to repeat a thing you know is false."
+            answer: "REFUSAL"
+          - question: "Word for the cost paid by those who refuse early."
+            answer: "PRICE"
+          - question: "Word for the cost paid by those who refuse late."
+            answer: "GREATER"
+
+      - puzzle_number: 98
+        title: "Three Pathways"
+        description: "Three answers from the project's operating model."
+        is_about: "Awakening"
+        questions:
+          - question: "First citizen pathway: open-protocol speech infrastructure."
+            answer: "NOSTR"
+          - question: "Second citizen pathway: documents already in the public record."
+            answer: "PRIMARY"
+          - question: "Third citizen pathway: the medium that reaches non-readers."
+            answer: "VIDEO"
+
+      - puzzle_number: 99
+        title: "What This Puzzle Is Not"
+        description: "Three things the project explicitly disavows."
+        is_about: "Awakening"
+        questions:
+          - question: "Word the project does not call for."
+            answer: "VIOLENCE"
+          - question: "Group the project does not blame."
+            answer: "ETHNIC"
+          - question: "Mood the project explicitly rejects."
+            answer: "NIHILISM"
+
+      - puzzle_number: 100
+        title: "The Question"
+        description: "Three answers about the single question all dimensions converge on."
+        is_about: "The Core Question"
+        questions:
+          - question: "Word for the structural condition the puzzle tests for."
+            answer: "CAPTURE"
+          - question: "Word for the institutions tested."
+            answer: "INSTITUTIONS"
+          - question: "Word for the ongoing decision the puzzle leaves with the solver."
+            answer: "OBLIGATION"

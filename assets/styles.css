@@ -1,0 +1,309 @@
+/* philosophershq.com — The Signal
+ * Static styles. Console-aesthetic. No build step.
+ */
+
+:root {
+  --bg: #0a0a0b;
+  --bg-elevated: #131311;
+  --fg: #efe7d2;
+  --fg-dim: #8a8473;
+  --rule: #2a2826;
+  --box-border: #3a352c;
+  --highlight: #fff4a8;
+  --highlight-text: #1a1500;
+  --solved: #7fbf6a;
+  --solved-bg: #15240f;
+  --wrong: #d05050;
+  --link: #c9b870;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "JetBrains Mono", "Menlo", "Consolas", ui-monospace, monospace;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8vh 24px 0;
+}
+
+main {
+  width: 100%;
+  max-width: 760px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.top-message {
+  font-size: 28px;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+}
+
+.top-message::after {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 1px;
+  background: var(--rule);
+  margin: 24px auto 0;
+}
+
+.riddle-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+label {
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.riddle-number-input {
+  background: var(--bg-elevated);
+  border: 1px solid var(--box-border);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 32px;
+  letter-spacing: 0.1em;
+  padding: 14px 20px;
+  width: 220px;
+  outline: none;
+  transition: border-color 120ms ease;
+}
+
+.riddle-number-input:focus {
+  border-color: var(--highlight);
+}
+
+.riddle-number-input::placeholder {
+  color: var(--fg-dim);
+  opacity: 0.4;
+}
+
+.riddle-status {
+  font-size: 13px;
+  color: var(--fg-dim);
+  min-height: 18px;
+  letter-spacing: 0.04em;
+}
+
+.riddle-title {
+  font-size: 18px;
+  color: var(--fg);
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
+.riddle-description {
+  font-size: 13px;
+  color: var(--fg-dim);
+  letter-spacing: 0.02em;
+  max-width: 600px;
+}
+
+.riddle-about {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  opacity: 0.7;
+}
+
+.answers {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.answer-row {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 240ms ease, transform 240ms ease;
+}
+
+.answer-row.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.answer-row .prompt {
+  font-size: 14px;
+  color: var(--fg-dim);
+  letter-spacing: 0.04em;
+  max-width: 720px;
+}
+
+.answer-row .question {
+  font-size: 14px;
+  color: var(--fg);
+  letter-spacing: 0.02em;
+  max-width: 720px;
+  margin-bottom: 4px;
+}
+
+.boxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.word-gap {
+  width: 28px;
+  height: 1px;
+}
+
+.letter-box {
+  width: 48px;
+  height: 64px;
+  border: 1px solid var(--box-border);
+  background: var(--bg-elevated);
+  color: var(--fg);
+  font-size: 28px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: text;
+  user-select: none;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
+  outline: none;
+}
+
+.letter-box.active {
+  background: var(--highlight);
+  color: var(--highlight-text);
+  border-color: var(--highlight);
+}
+
+.letter-box.solved {
+  color: var(--solved);
+  border-color: var(--solved);
+  background: var(--solved-bg);
+  cursor: default;
+}
+
+.letter-box.wrong {
+  animation: shake 380ms ease;
+  border-color: var(--wrong);
+  color: var(--wrong);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.reward {
+  margin-top: 32px;
+  padding: 28px;
+  border: 1px solid var(--solved);
+  background: var(--solved-bg);
+  color: var(--fg);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 360ms ease, transform 360ms ease;
+}
+
+.reward.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.reward[hidden] {
+  display: none !important;
+}
+
+.reward .label {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--solved);
+  margin-bottom: 12px;
+}
+
+.reward .value {
+  font-size: 20px;
+  letter-spacing: 0.04em;
+  word-break: break-word;
+}
+
+.reward .value a {
+  color: var(--link);
+  text-decoration: underline;
+  text-decoration-color: var(--solved);
+  text-underline-offset: 4px;
+}
+
+.boot-error {
+  margin: 40px 0;
+  padding: 24px;
+  border: 1px solid var(--wrong);
+  background: rgba(208, 80, 80, 0.06);
+  color: var(--wrong);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.boot-error[hidden] {
+  display: none !important;
+}
+
+.footer {
+  margin-top: auto;
+  padding: 80px 0 32px;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  opacity: 0.5;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 540px) {
+  body { padding: 6vh 16px 0; }
+  main { gap: 32px; }
+  .letter-box {
+    width: 38px;
+    height: 52px;
+    font-size: 22px;
+  }
+  .top-message { font-size: 22px; }
+  .riddle-number-input { font-size: 26px; width: 180px; }
+}
