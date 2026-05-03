@@ -3,18 +3,18 @@
  */
 
 :root {
-  --bg: #0a0a0b;
-  --bg-elevated: #131311;
-  --fg: #efe7d2;
-  --fg-dim: #8a8473;
-  --rule: #2a2826;
-  --box-border: #3a352c;
-  --highlight: #fff4a8;
+  --bg: #fafaf6;
+  --bg-elevated: #ffffff;
+  --fg: #0e0e0c;
+  --fg-dim: #5a564b;
+  --rule: #d8d4c8;
+  --box-border: #b8b2a3;
+  --highlight: #fff09a;
   --highlight-text: #1a1500;
-  --solved: #7fbf6a;
-  --solved-bg: #15240f;
-  --wrong: #d05050;
-  --link: #c9b870;
+  --solved: #2a7a1a;
+  --solved-bg: #ecf6e3;
+  --wrong: #b03030;
+  --link: #6b5a1a;
 }
 
 * { box-sizing: border-box; }
@@ -264,7 +264,7 @@ label {
   margin: 40px 0;
   padding: 24px;
   border: 1px solid var(--wrong);
-  background: rgba(208, 80, 80, 0.06);
+  background: rgba(176, 48, 48, 0.06);
   color: var(--wrong);
   font-size: 13px;
   letter-spacing: 0.04em;
@@ -272,16 +272,6 @@ label {
 
 .boot-error[hidden] {
   display: none !important;
-}
-
-.footer {
-  margin-top: auto;
-  padding: 80px 0 32px;
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--fg-dim);
-  opacity: 0.5;
 }
 
 .visually-hidden {
