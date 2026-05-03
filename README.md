@@ -475,3 +475,5 @@ PhilosophersHQ/
 ## Source Directory
 
 The working source for all Signal content lives at `~/BGit/act3/ck_marketing/4chan`. PhilosophersHQ publishes from it. Never edit published content here without making the corresponding change in the source directory first.
+
+
